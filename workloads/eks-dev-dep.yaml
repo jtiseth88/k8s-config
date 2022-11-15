@@ -1,0 +1,39 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: eks-dev
+  namespace: eks-dev
+  labels:
+    app: eks-dev
+  annotations:
+    # Container Image Automated Updates
+    flux.weave.works/automated: "true"
+    # do not apply this manifest on the cluster
+    #flux.weave.works/ignore: "true"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: eks-dev
+  template:
+    metadata:
+      labels:
+        app: eks-dev
+    spec:
+      containers:
+      - name: eks-dev
+        image: 781720355001.dkr.ecr.us-east-1.amazonaws.com/eks-dev:fb7978ec
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 80
+          name: http
+          protocol: TCP
+        livenessProbe:
+          httpGet:
+            path: /
+            port: http
+        readinessProbe:
+          httpGet:
+            path: /
+            port: http
